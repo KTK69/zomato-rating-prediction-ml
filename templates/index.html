@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Your Prediction</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Arimo&family=Hind:wght@300&family=Open+Sans+Condensed:wght@300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+  <!-- Background Animation Container -->
+  <div id="animation-container"></div>
+
+  <!-- Content Container -->
+  <div class="content">
+    <header>
+      <img src="https://restaurantindia.s3.ap-south-1.amazonaws.com/s3fs-public/news14109.jpg" alt="Zomato" class="header-img">
+    </header>
+
+    <div class="container">
+      <div class="login">
+        <h1>Predict Zomato Restaurant Ratings</h1>
+        <form action="{{ url_for('predict') }}" method="post">
+          <!-- Online Order -->
+          <select name="Online Order" required>
+            <option value="" disabled selected>Does the restaurant offer online ordering?</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+
+          <!-- Book Table -->
+          <select name="Book Table" required>
+            <option value="" disabled selected>Can you book a table at the restaurant?</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+
+          <!-- Votes -->
+          <input type="text" name="Votes" placeholder="How many votes has the restaurant received?" required>
+
+          <!-- Location -->
+          <input type="text" name="Location" placeholder="Where is the restaurant located?" required>
+
+          <!-- Restaurant Type -->
+          <input type="text" name="Restaurant Type" placeholder="What type of restaurant is it?" required>
+
+          <!-- Cuisines -->
+          <input type="text" name="Cuisines" placeholder="What cuisines does the restaurant serve?" required>
+
+          <!-- Cost -->
+          <input type="text" name="Cost" placeholder="What is the average cost for two people?" required>
+
+          <!-- Menu Item -->
+          <input type="text" name="Menu Item" placeholder="What is a popular menu item?" required>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn">Predict</button>
+        </form>
+        <br>
+        <br>
+        <div class="prediction">{{ prediction_text }}</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // JavaScript for 3D Animations (Food-themed: Rotating Pizza)
+    document.addEventListener('DOMContentLoaded', function() {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.getElementById('animation-container').appendChild(renderer.domElement);
+
+      // Create a pizza-like shape (cylinder with texture)
+      const geometry = new THREE.CylinderGeometry(1, 1, 0.2, 32);
+      const textureLoader = new THREE.TextureLoader();
+      const texture = textureLoader.load('https://i.imgur.com/3QZQZQz.png'); // Pizza texture
+      const material = new THREE.MeshBasicMaterial({ map: texture });
+      const pizza = new THREE.Mesh(geometry, material);
+      scene.add(pizza);
+
+      camera.position.z = 5;
+
+      // Add ambient light for better visibility
+      const ambientLight = new THREE.AmbientLight(0x404040);
+      scene.add(ambientLight);
+
+      // Animation loop
+      const animate = function () {
+        requestAnimationFrame(animate);
+
+        pizza.rotation.x += 0.01;
+        pizza.rotation.y += 0.01;
+
+        renderer.render(scene, camera);
+      };
+
+      animate();
+
+      // Handle window resize
+      window.addEventListener('resize', function () {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+      });
+    });
+  </script>
+</body>
+</html>
